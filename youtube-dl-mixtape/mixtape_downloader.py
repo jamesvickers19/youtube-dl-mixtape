@@ -31,7 +31,6 @@ def section_file(file, sections):
         time_arg = ""
         if i + 1 < len(sections):
             time_arg = f"-t {sections[i + 1][0] - start_time}"
-        # TODO security: sanitize output_name
         args = f"ffmpeg -y -i {file} -ss {start_time} {time_arg} \"{output_name}\".mp4"
         workers.append(subprocess.Popen(args))
     for w in workers:
