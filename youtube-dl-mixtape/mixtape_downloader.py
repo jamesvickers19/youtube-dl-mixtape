@@ -22,6 +22,7 @@ def download_audio(video_url, target_folder, filename):
 
 
 # splits file into tracks
+# TODO do this in parallel
 def section_file(file, sections):
     for i in range(len(sections)):
         start_time, section_name = sections[i]
@@ -29,10 +30,10 @@ def section_file(file, sections):
         if i + 1 < len(sections):
             time_arg = f"-t {sections[i+1][0] - start_time}"
         output_name = os.path.join(os.path.dirname(file), section_name)
-        os.system(f"ffmpeg -i {file} -ss {start_time} {time_arg} \"{output_name}\".mp4")
+        os.system(f"ffmpeg -y -i {file} -ss {start_time} {time_arg} \"{output_name}\".mp4")
 
 
-video = 'https://www.youtube.com/watch?v=uw5iZAUJJXQ'
+video = 'https://www.youtube.com/watch?v=HjxZYiTpU3k'
 path = os.path.join("C:\\", "Users", "james", "Downloads", "test")
 print("track_labels: " + str(track_labels(video)))
 download_audio(video, path, "test")
