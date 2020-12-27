@@ -1,6 +1,7 @@
 from pytube import YouTube
 import re
 import os
+import subprocess
 
 
 # e.g. parse_time("1:30") => 90
@@ -22,15 +23,19 @@ def download_audio(video_url, target_folder, filename):
 
 
 # splits file into tracks
-# TODO do this in parallel
 def section_file(file, sections):
+    workers = []
     for i in range(len(sections)):
         start_time, section_name = sections[i]
+        output_name = os.path.join(os.path.dirname(file), section_name)
         time_arg = ""
         if i + 1 < len(sections):
-            time_arg = f"-t {sections[i+1][0] - start_time}"
-        output_name = os.path.join(os.path.dirname(file), section_name)
-        os.system(f"ffmpeg -y -i {file} -ss {start_time} {time_arg} \"{output_name}\".mp4")
+            time_arg = f"-t {sections[i + 1][0] - start_time}"
+        # TODO security: sanitize output_name
+        args = f"ffmpeg -y -i {file} -ss {start_time} {time_arg} \"{output_name}\".mp4"
+        workers.append(subprocess.Popen(args))
+    for w in workers:
+        w.wait()
 
 
 video = 'https://www.youtube.com/watch?v=HjxZYiTpU3k'
