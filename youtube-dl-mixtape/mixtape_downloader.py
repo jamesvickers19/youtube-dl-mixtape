@@ -11,7 +11,8 @@ def parse_time(time_str):
 
 # returns list of tuple (start_time_sec, name)
 def track_labels(video_url):
-    matches = re.findall(r"(\d+:\d+:?\d+) (.*)", YouTube(video_url).description)
+    description = YouTube(video_url).description
+    matches = re.findall(r"\[*(\d+:\d+:?\d+)\]* (.*)", description)
     return list(map(lambda match: (parse_time(match[0]), match[1]), matches))
 
 
@@ -37,8 +38,8 @@ def section_file(file, sections):
         w.wait()
 
 
-video = 'https://www.youtube.com/watch?v=HjxZYiTpU3k'
-path = os.path.join("C:\\", "Users", "james", "Downloads", "test")
+video = 'https://www.youtube.com/watch?v=-FlxM_0S2lA'
+path = os.path.join("../", "test")
 print("track_labels: " + str(track_labels(video)))
 download_audio(video, path, "test")
 section_file(os.path.join(path, "test.mp4"), track_labels(video))
