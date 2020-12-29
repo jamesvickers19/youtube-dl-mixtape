@@ -19,7 +19,8 @@ def track_labels(video_url):
 def download_audio(video_url, target_folder, filename):
     YouTube(video_url).streams\
         .filter(only_audio=True)\
-        .first()\
+        .filter(mime_type="audio/mp4")\
+        .order_by('abr').desc().first()\
         .download(output_path=target_folder, filename=filename)
 
 
