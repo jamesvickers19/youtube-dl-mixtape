@@ -1,5 +1,6 @@
 from flask import Flask, request, Response
 from youtube_dl_mixtape.mixtape_downloader import track_labels
+import json
 
 '''
 Env vars:
@@ -13,12 +14,12 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
 
     @app.route('/tracks')
-    def tracks():
+    def get_tracks():
         video_id = request.args.get('v')
         if video_id is None:
             return Response("Missing required 'v' parameter (Youtube video id)", status=400)
-        # TODO return as json array of tuples
-        return str(track_labels(f"https://youtube.com/watch?v={video_id}"))
+        tracks = track_labels(f"https://youtube.com/watch?v={video_id}")
+        return Response(json.dumps(tracks), mimetype="application/json")
 
     # takes video_id and sections, returns zip (?) of mp4 files
     def download():
