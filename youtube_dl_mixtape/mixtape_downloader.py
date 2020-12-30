@@ -39,11 +39,10 @@ def section_file(file, sections):
         w.wait()
 
 
+'''
 video = 'https://www.youtube.com/watch?v=-FlxM_0S2lA'
 path = os.path.join("../", "test")
 print("track_labels: " + str(track_labels(video)))
 download_audio(video, path, "test")
 section_file(os.path.join(path, "test.mp4"), track_labels(video))
-
-
-# TODO make this an extension / MR of pytube library?
+'''
