@@ -30,10 +30,10 @@ def section_file(file, sections):
     for i in range(len(sections)):
         start_time, section_name = sections[i]
         output_name = os.path.join(os.path.dirname(file), section_name)
-        time_arg = ""
+        args = ["ffmpeg", "-y", "-i", file, "-ss", str(start_time)]
         if i + 1 < len(sections):
-            time_arg = f"-t {sections[i + 1][0] - start_time}"
-        args = f"ffmpeg -y -i {file} -ss {start_time} {time_arg} \"{output_name}\".mp4"
+            args = args + ["-t", str(sections[i + 1][0] - start_time)]
+        args.append(f"{output_name}.mp4")
         workers.append(subprocess.Popen(args))
     for w in workers:
         w.wait()
