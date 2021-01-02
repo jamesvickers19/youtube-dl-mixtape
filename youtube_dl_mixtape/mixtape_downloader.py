@@ -9,11 +9,11 @@ def parse_time(time_str):
     return sum(int(x) * 60 ** i for i, x in enumerate(reversed(time_str.split(':'))))
 
 
-# returns list of tuple (start_time_sec, name)
+# returns a dictionary from start_time_sec to name
 def track_labels(video_url):
     description = YouTube(video_url).description
     matches = re.findall(r"\[*(\d+:\d+:?\d+)\]* (.*)", description)
-    return list(map(lambda match: (parse_time(match[0]), match[1]), matches))
+    return list(map(lambda match: {"start_time_sec": parse_time(match[0]), "name": match[1]}, matches))
 
 
 def download_audio(video_url, target_folder, filename):
@@ -28,11 +28,14 @@ def download_audio(video_url, target_folder, filename):
 def section_file(file, sections):
     workers = []
     for i in range(len(sections)):
-        start_time, section_name = sections[i]
+        section = sections[i]
+        start_time = section["start_time_sec"]
+        section_name = section["name"]
         output_name = os.path.join(os.path.dirname(file), section_name)
         args = ["ffmpeg", "-y", "-i", file, "-ss", str(start_time)]
-        if i + 1 < len(sections):
-            args = args + ["-t", str(sections[i + 1][0] - start_time)]
+        if i + 1 < len(sections):  # if next section, add end time argument
+            next_start_time = sections[i + 1]["start_time_sec"]
+            args = args + ["-t", str(next_start_time - start_time)]
         args.append(f"{output_name}.mp4")
         workers.append(subprocess.Popen(args))
     for w in workers:
@@ -42,7 +45,8 @@ def section_file(file, sections):
 '''
 video = 'https://www.youtube.com/watch?v=-FlxM_0S2lA'
 path = os.path.join("../", "test")
-print("track_labels: " + str(track_labels(video)))
+labels = track_labels(video)
+print("labels: " + str(labels))
 download_audio(video, path, "test")
-section_file(os.path.join(path, "test.mp4"), track_labels(video))
+section_file(os.path.join(path, "test.mp4"), labels)
 '''
