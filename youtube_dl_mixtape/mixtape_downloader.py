@@ -13,7 +13,7 @@ def parse_time(time_str):
 def track_labels(video_url):
     description = YouTube(video_url).description
     matches = re.findall(r"\[*(\d+:\d+:?\d+)\]* (.*)", description)
-    return list(map(lambda match: {"start_time_sec": parse_time(match[0]), "name": match[1]}, matches))
+    return list(map(lambda match: {"startTimeSec": parse_time(match[0]), "name": match[1]}, matches))
 
 
 def download_audio(video_url, target_folder, filename):
@@ -29,12 +29,12 @@ def section_file(file, sections):
     workers = []
     for i in range(len(sections)):
         section = sections[i]
-        start_time = section["start_time_sec"]
+        start_time = section["startTimeSec"]
         section_name = section["name"]
         output_name = os.path.join(os.path.dirname(file), section_name)
         args = ["ffmpeg", "-y", "-i", file, "-ss", str(start_time)]
         if i + 1 < len(sections):  # if next section, add end time argument
-            next_start_time = sections[i + 1]["start_time_sec"]
+            next_start_time = sections[i + 1]["startTimeSec"]
             args = args + ["-t", str(next_start_time - start_time)]
         args.append(f"{output_name}.mp4")
         workers.append(subprocess.Popen(args))
