@@ -13,15 +13,16 @@ def parse_time(time_str):
 # "startTimeSec" => int
 # "endTimeSec" => int
 # "name" => string
-def track_labels(video_url):
+def sections(video_url):
     video = YouTube(video_url)
     description = video.description
     section_strs = re.findall(r"\[*(\d+:\d+:?\d+)\]* (.*)", description)
-    sections = list(map(lambda s: {"startTimeSec": parse_time(s[0]), "name": s[1]}, section_strs))
-    sections = sorted(sections, key=lambda s: s["startTimeSec"])
-    for i in range(len(sections)):
-        sections[i]["endTimeSec"] = sections[i + 1]["startTimeSec"] if i + 1 < len(sections) else video.length
-    return sections
+    sects = list(map(lambda s: {"startTimeSec": parse_time(s[0]), "name": s[1]}, section_strs))
+    sects = sorted(sects, key=lambda s: s["startTimeSec"])
+    num_sects = len(sects)
+    for i in range(num_sects):
+        sects[i]["endTimeSec"] = sects[i + 1]["startTimeSec"] if i + 1 < num_sects else video.length
+    return sects
 
 
 def download_audio(video_url, target_folder, filename):
