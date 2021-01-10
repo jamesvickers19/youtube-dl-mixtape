@@ -1,5 +1,5 @@
 from flask import Flask, request, Response
-from youtube_dl_mixtape.mixtape_downloader import sections
+from youtube_dl_mixtape.mixtape_downloader import video_sections
 import json
 
 '''
@@ -18,8 +18,8 @@ def create_app():
         video_id = request.args.get('v')
         if video_id is None:
             return Response("Missing required 'v' parameter (Youtube video id)", status=400)
-        video_sections = sections(f"https://youtube.com/watch?v={video_id}")
-        response = Response(json.dumps(video_sections), mimetype="application/json")
+        sections = video_sections(f"https://youtube.com/watch?v={video_id}")
+        response = Response(json.dumps(sections), mimetype="application/json")
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
